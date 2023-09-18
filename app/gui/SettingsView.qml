@@ -278,7 +278,6 @@ Flickable {
                                 StreamingPreferences.bitrateKbps = StreamingPreferences.getDefaultBitrate(StreamingPreferences.width,
                                                                                                           StreamingPreferences.height,
                                                                                                           StreamingPreferences.fps);
-                                slider.value = StreamingPreferences.bitrateKbps
                             }
 
                             lastIndexValue = currentIndex
@@ -443,7 +442,6 @@ Flickable {
                                 StreamingPreferences.bitrateKbps = StreamingPreferences.getDefaultBitrate(StreamingPreferences.width,
                                                                                                           StreamingPreferences.height,
                                                                                                           StreamingPreferences.fps);
-                                slider.value = StreamingPreferences.bitrateKbps
                             }
 
                             lastIndexValue = currentIndex
@@ -673,18 +671,21 @@ Flickable {
                 Slider {
                     id: slider
 
-                    value: StreamingPreferences.bitrateKbps
+                    // Use a logarithmic scale for the values here so it's easier
+                    // to select between lower bitrates
+                    value: Math.log2(StreamingPreferences.bitrateKbps)
 
-                    stepSize: 500
-                    from : 500
-                    to: 150000
+                    from : 8.966    // ~0.5 Mbps
+                    to: 17.19       // ~150 Mbps
 
                     snapMode: "SnapOnRelease"
                     width: Math.min(bitrateDesc.implicitWidth, parent.width)
 
                     onValueChanged: {
-                        bitrateTitle.text = qsTr("Video bitrate: %1 Mbps").arg(value / 1000.0)
-                        StreamingPreferences.bitrateKbps = value
+                        // Undo the logarithm then round to 2 significant figures
+                        let newBitrateKbps = (2**value).toPrecision(2)
+                        bitrateTitle.text = qsTr("Video bitrate: %1 Mbps").arg(newBitrateKbps / 1000.0)
+                        StreamingPreferences.bitrateKbps = newBitrateKbps
                     }
 
                     Component.onCompleted: {
