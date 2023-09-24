@@ -675,8 +675,8 @@ Flickable {
                     // to select between lower bitrates
                     value: Math.log2(StreamingPreferences.bitrateKbps)
 
-                    from : 8.966    // ~0.5 Mbps
-                    to: 17.19       // ~150 Mbps
+                    from : Math.log2(500)
+                    to: Math.log2(150000)
 
                     snapMode: "SnapOnRelease"
                     width: Math.min(bitrateDesc.implicitWidth, parent.width)
